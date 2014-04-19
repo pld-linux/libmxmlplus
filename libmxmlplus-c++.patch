@@ -1,0 +1,172 @@
+--- libmxmlplus-0.9.2/include/mxml_node.h.orig	2004-04-11 02:07:53.000000000 +0200
++++ libmxmlplus-0.9.2/include/mxml_node.h	2014-04-19 09:51:49.709547370 +0200
+@@ -372,7 +372,7 @@
+       @param child the node to be removed
+       @throw NotFoundError if the node is not in the child list
+    */
+-   void Node::removeChild( Node *child ) throw( NotFoundError );
++   void removeChild( Node *child ) throw( NotFoundError );
+ 
+ 
+    Node *parent() const { return m_parent; }
+@@ -391,7 +391,7 @@
+       ...Or how many levels are above this node.
+       Can be called also for nodes that have not a valid symbolic path.
+    */
+-   int Node::depth() const;
++   int depth() const;
+ 
+    /** Returns a symbolic path leading to the node.
+       A Node path is the the list of all the ancestor node names, plus the
+@@ -412,7 +412,7 @@
+       @return the path leading to the node, or an empty string if the node
+          has not a valid path.
+    */
+-   std::string Node::path() const;
++   std::string path() const;
+ 
+ 
+    /* Clones the node and all its children.
+--- libmxmlplus-0.9.2/include/mxml_iterator.h.orig	2004-04-11 02:04:31.000000000 +0200
++++ libmxmlplus-0.9.2/include/mxml_iterator.h	2014-04-19 10:00:47.462869492 +0200
+@@ -15,7 +15,7 @@
+ template<class __Node >
+ __iterator<__Node> &__iterator<__Node>::__prev()
+ {
+-   assert( m_node != m_base );
++   assert( this->m_node != m_base );
+ 
+    if (m_node == 0 ) {
+       if ( m_base->parent() != 0 )
+@@ -75,21 +75,21 @@
+ template< class __Node >
+ __iterator<__Node> &__deep_iterator<__Node>::__next()
+ {
+-   assert( m_node != 0 );
++   assert( this->m_node != 0 );
+ 
+-   if ( m_node->child() != 0 ) {
+-      m_node = m_node->child();
++   if ( this->m_node->child() != 0 ) {
++      this->m_node = this->m_node->child();
+    }
+-   else if ( m_node->next() != 0 ) {
+-      m_node = m_node->next();
++   else if ( this->m_node->next() != 0 ) {
++      this->m_node = this->m_node->next();
+    }
+    else {
+-      while ( m_node->parent() != 0 ) {
+-         m_node = m_node->parent();
+-         if ( m_node->next() != 0 )
++      while ( this->m_node->parent() != 0 ) {
++         this->m_node = this->m_node->parent();
++         if ( this->m_node->next() != 0 )
+             break;
+       }
+-      m_node = m_node->next(); // can be NULL
++      this->m_node = this->m_node->next(); // can be NULL
+    }
+ 
+    return *this;
+@@ -142,16 +142,16 @@
+    int matches;
+    while ( this->m_node != 0 ) {
+       matches = 0;
+-      if ( m_name != "" && m_name == m_node->name() )
++      if ( m_name != "" && m_name == this->m_node->name() )
+          matches++;
+ 
+-      if ( m_attr != "" && m_node->hasAttribute( m_attr ) ) {
++      if ( m_attr != "" && this->m_node->hasAttribute( m_attr ) ) {
+          matches++;
+-         if ( m_valattr != "" && m_node->getAttribute( m_attr ) == m_valattr )
++         if ( m_valattr != "" && this->m_node->getAttribute( m_attr ) == m_valattr )
+             matches++;
+       }
+ 
+-      if ( m_data != "" && m_node->data().find( m_data ) != std::string::npos )
++      if ( m_data != "" && this->m_node->data().find( m_data ) != std::string::npos )
+          matches++;
+ 
+       if ( matches < m_maxmatch )
+@@ -184,7 +184,7 @@
+ template< class __Node >
+ __iterator<__Node> &__path_iterator<__Node>::__next()
+ {
+-   __Node *ptr = m_node;
++   __Node *ptr = this->m_node;
+    std::string name;
+    std::string::size_type pos = m_path.rfind('/');
+    
+@@ -197,11 +197,11 @@
+       name = m_path.substr( pos );
+    }
+    
+-   m_node = m_node->next();   
++   this->m_node = this->m_node->next();   
+    // todo: this sucks, must re-do it better
+-   while ( m_node ) {
+-      if ( name == "*" || m_node->name() == name ) break;
+-      m_node = m_node->next();   
++   while ( this->m_node ) {
++      if ( name == "*" || this->m_node->name() == name ) break;
++      this->m_node = this->m_node->next();   
+    }
+    
+    return *this;
+@@ -210,14 +210,14 @@
+ template< class __Node >
+ __iterator<__Node> &__path_iterator<__Node>::__prev()
+ {
+-   assert( m_node != 0 );
++   assert( this->m_node != 0 );
+ 
+-   __Node *ptr = m_node;
+-   m_node = m_node->prev();
++   __Node *ptr = this->m_node;
++   this->m_node = this->m_node->prev();
+    // todo: this sucks, must re-do it better
+-   while ( m_node != 0 ) {
+-      if ( m_node->name() == ptr->name() ) break;
+-      m_node = m_node->prev();
++   while ( this->m_node != 0 ) {
++      if ( this->m_node->name() == ptr->name() ) break;
++      this->m_node = this->m_node->prev();
+    }
+ 
+    return *this;
+@@ -250,9 +250,9 @@
+ template< class __Node >
+ __iterator<__Node> &__path_iterator<__Node>::__find()
+ {
+-   if ( m_node == 0 ) return *this;
++   if ( this->m_node == 0 ) return *this;
+    
+-   __Node *rootNode = m_node;
++   __Node *rootNode = this->m_node;
+    std::string firstName;
+    std::string::size_type pos;
+    if ( rootNode->nodeType() == Node::typeDocument ) 
+@@ -262,7 +262,7 @@
+          rootNode = rootNode->next();
+       if ( ! rootNode )
+       {
+-         m_node = 0;
++         this->m_node = 0;
+          return *this;
+       }
+    }
+@@ -295,10 +295,10 @@
+       {
+          if ( pos == std::string::npos ) 
+          {
+-            m_node = rootNode;
++            this->m_node = rootNode;
+          }
+          else {
+-            m_node = subfind( rootNode, pos+1 );
++            this->m_node = subfind( rootNode, pos+1 );
+          }
+          break;
+       }

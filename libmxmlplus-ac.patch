@@ -1,0 +1,24 @@
+--- libmxmlplus-0.9.2/configure.in.orig	2004-04-06 01:46:27.000000000 +0200
++++ libmxmlplus-0.9.2/configure.in	2014-04-19 09:46:29.462887375 +0200
+@@ -9,7 +9,7 @@
+ dnl Begin of script
+ dnl
+ 
+-AC_INIT( src )
++AC_INIT([src])
+ 
+ AC_REVISION($Revision: 1.4 $)
+ AC_CANONICAL_HOST
+@@ -92,12 +92,6 @@
+ 
+ RANLIB=ranlib
+ 
+-if test x$enable_debug = xyes; then
+-   CXXFLAGS="-g"
+-else
+-   CXXFLAGS="-O2"
+-fi
+-
+ dnl--------------------------------
+ dnl settings for makefiles
+ dnl
