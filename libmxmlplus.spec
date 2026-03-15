@@ -2,13 +2,14 @@ Summary:	Minimal XML library for C++
 Summary(pl.UTF-8):	Minimalna biblioteka XML dla C++
 Name:		libmxmlplus
 Version:	0.9.2
-Release:	1
+Release:	2
 License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://downloads.sourceforge.net/mxml/%{name}-%{version}.tar.gz
 # Source0-md5:	562b3aedaa78a16bf963f43327566e6a
 Patch0:		%{name}-ac.patch
 Patch1:		%{name}-c++.patch
+Patch2:		%{name}-dynamic-exception-specs.patch
 URL:		http://mxml.sourceforge.net/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -53,6 +54,7 @@ Statyczna biblioteka libmxmlplus.
 %setup -q
 %patch -P0 -p1
 %patch -P1 -p1
+%patch -P2 -p1
 
 %build
 %{__libtoolize}

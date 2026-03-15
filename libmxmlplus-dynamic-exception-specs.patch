@@ -1,0 +1,114 @@
+--- libmxmlplus-0.9.2/include/mxml_node.h.orig	2026-03-15 11:27:50.826565621 +0100
++++ libmxmlplus-0.9.2/include/mxml_node.h	2026-03-15 11:27:58.886565621 +0100
+@@ -214,8 +214,7 @@
+       @throws MXML::MalformedError if the node is invalid
+       @throws MXML::IOError in case of hard errors on the stream
+    */
+-   Node( std::istream &in, const int style = 0, const int line=1, const int pos=0  )
+-      throw( MalformedError );
++   Node( std::istream &in, const int style = 0, const int line=1, const int pos=0  );
+ 
+    /* Creates a new node
+       Depending on the types the node could have a name, a data or both.
+@@ -309,8 +308,7 @@
+       @return the attribute value, if it exists
+       @throws MXML::NotFoundError if the attribute name can't be found.
+    */
+-   const std::string getAttribute( const std::string name ) const
+-      throw( NotFoundError );
++   const std::string getAttribute( const std::string name ) const;
+ 
+    /** Sets the value of a given attribute.
+       This is a shortcut instead of searching for an attribute in
+@@ -319,8 +317,7 @@
+       @return the attribute value, if it exists
+       @throws MXML::NotFoundError if the attribute name can't be found.
+    */
+-   void setAttribute( const std::string name, const std::string value )
+-      throw( NotFoundError );
++   void setAttribute( const std::string name, const std::string value );
+ 
+    /** Returns true if the node has a given attribute.
+       The found attribute is cached, so if you make this method follow
+@@ -372,7 +369,7 @@
+       @param child the node to be removed
+       @throw NotFoundError if the node is not in the child list
+    */
+-   void removeChild( Node *child ) throw( NotFoundError );
++   void removeChild( Node *child );
+ 
+ 
+    Node *parent() const { return m_parent; }
+--- libmxmlplus-0.9.2/include/mxml_document.h.orig	2026-03-15 11:27:50.829898955 +0100
++++ libmxmlplus-0.9.2/include/mxml_document.h	2026-03-15 11:28:03.859898955 +0100
+@@ -71,7 +71,7 @@
+       \param style the mode in which the document is read/written
+       \see stylemacros
+    */
+-   Document( std::istream &in, const int style = 0 ) throw( MalformedError );
++   Document( std::istream &in, const int style = 0 );
+    
+    /** Destroys the document.
+       If you provided a stream at document creation, the stream is NOT colsed.
+@@ -141,7 +141,7 @@
+       \param stream the input stream used for reading the data.
+       \see Node::read()
+    */
+-   virtual void read( std::istream &stream ) throw(MalformedError);
++   virtual void read( std::istream &stream );
+ 
+ };
+ 
+--- libmxmlplus-0.9.2/src/mxml_node.cpp.orig	2026-03-15 11:27:50.835165381 +0100
++++ libmxmlplus-0.9.2/src/mxml_node.cpp	2026-03-15 11:28:11.593232288 +0100
+@@ -38,7 +38,7 @@
+ 
+ 
+ Node::Node( std::istream &in,  const int style, const int l, const int pos  )
+-   throw( MalformedError ): Element( l, pos )
++   : Element( l, pos )
+ {
+    // variables to optimize data node promotion in tag nodes
+    bool promote_data = true;
+@@ -382,7 +382,6 @@
+ /* Search routines */
+ 
+ const std::string Node::getAttribute( const std::string name ) const
+-   throw( NotFoundError )
+ {
+    AttribList::const_iterator iter = m_attrib.begin();
+ 
+@@ -395,7 +394,6 @@
+ }
+ 
+ void Node::setAttribute( const std::string name, const std::string value )
+-   throw( NotFoundError )
+ {
+    AttribList::iterator iter = m_attrib.begin();
+ 
+@@ -423,7 +421,6 @@
+ 
+ /* unlink routines */
+ void Node::removeChild( Node *child )
+-   throw( NotFoundError )
+ {
+    if (child->parent() != this )
+       throw NotFoundError( Error::errHyerarcy, this );
+--- libmxmlplus-0.9.2/src/mxml_document.cpp.orig	2026-03-15 11:27:50.835165381 +0100
++++ libmxmlplus-0.9.2/src/mxml_document.cpp	2026-03-15 11:28:16.483232288 +0100
+@@ -27,7 +27,6 @@
+ }
+ 
+ Document::Document( std::istream &in, const int style )
+-   throw( MalformedError )
+ {
+    m_style = style;
+    m_root = new Node( Node::typeDocument );
+@@ -55,7 +54,6 @@
+ 
+ 
+ void Document::read( std::istream &stream )
+-   throw( MalformedError )
+ {
+    if ( m_root->child() != 0 ) {
+       delete m_root;
